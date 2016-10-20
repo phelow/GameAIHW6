@@ -2,12 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class AStarSearch : MonoBehaviour {
+public class AStarSearch : MonoBehaviour
+{
     private AStarTile[,] m_worldRepresentation;
     private static AStarSearch ms_instance;
     private int m_worldHeight;
     private int m_worldWidth;
 
+    private const float mc_timeslice = 1.0f;
+    
     public class AStarTile
     {
         Tile m_worldTile;
@@ -18,12 +21,17 @@ public class AStarSearch : MonoBehaviour {
         private int m_xPosition;
         private int m_yPosition;
 
+        public bool IsPassable()
+        {
+            return m_worldTile is Passable;
+        }
+
         public void Color()
         {
             m_worldTile.ChangeColor();
         }
 
-        public AStarTile(Tile worldTile,int x, int y)
+        public AStarTile(Tile worldTile, int x, int y)
         {
             m_estimatedCostToGoal = Mathf.Infinity;
             m_costFromStart = Mathf.Infinity;
@@ -91,11 +99,12 @@ public class AStarSearch : MonoBehaviour {
         }
     }
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         ms_instance = this;
 
     }
-	
+
     public void CreateWorldRepresentation()
     {
         m_worldWidth = AssembleMap.m_mapTiles.GetLength(0);
@@ -107,17 +116,18 @@ public class AStarSearch : MonoBehaviour {
         {
             for (int x = 0; x < m_worldWidth; x++)
             {
-                m_worldRepresentation[x, y] = new AStarTile(AssembleMap.m_mapTiles[x, y],x,y);
+                m_worldRepresentation[x, y] = new AStarTile(AssembleMap.m_mapTiles[x, y], x, y);
             }
         }
     }
 
-    public AStarTile GetAStarTileByWorldTile(Tile m_tile) {
+    public AStarTile GetAStarTileByWorldTile(Tile m_tile)
+    {
         for (int y = 0; y < m_worldHeight; y++)
         {
             for (int x = 0; x < m_worldWidth; x++)
             {
-                if(m_worldRepresentation[x,y].GetTile() == m_tile)
+                if (m_worldRepresentation[x, y].GetTile() == m_tile)
                 {
                     return m_worldRepresentation[x, y];
                 }
@@ -134,7 +144,7 @@ public class AStarSearch : MonoBehaviour {
         ms_instance.CreateWorldRepresentation();
 
         ms_instance.StartCoroutine(ms_instance.PerformAStarSearchCoroutine(
-            ms_instance.GetAStarTileByWorldTile(startingPoint), 
+            ms_instance.GetAStarTileByWorldTile(startingPoint),
             ms_instance.GetAStarTileByWorldTile(endingPoint)));
     }
 
@@ -149,14 +159,20 @@ public class AStarSearch : MonoBehaviour {
         openSet.Add(startingTile);
 
         startingTile.CostFromStart = 0;
-        startingTile.EstimatedCostToGoal = HeuristicCalculation(startingTile,endingTile);
-
-        while(openSet.Count > 0)
+        startingTile.EstimatedCostToGoal = HeuristicCalculation(startingTile, endingTile);
+        float t = 0.0f;
+        while (openSet.Count > 0)
         {
-            AStarTile current = null;
-            foreach(AStarTile tile in openSet)
+            t += Time.deltaTime;
+            if(t > mc_timeslice)
             {
-                if(current == null || tile.EstimatedCostToGoal < current.EstimatedCostToGoal)
+                yield return new WaitForEndOfFrame();
+                t = 0;
+            }
+            AStarTile current = null;
+            foreach (AStarTile tile in openSet)
+            {
+                if (current == null || tile.EstimatedCostToGoal < current.EstimatedCostToGoal)
                 {
                     current = tile;
                 }
@@ -168,35 +184,52 @@ public class AStarSearch : MonoBehaviour {
 
             HashSet<AStarTile> neighbors = new HashSet<AStarTile>();
 
-            if(current.X-1 > 0)
+            if (current.X - 1 > 0)
             {
-                if(current.Y-1 > 0)
+                if (current.Y - 1 > 0)
                 {
                     neighbors.Add(m_worldRepresentation[current.X - 1, current.Y - 1]);
                 }
 
-                if(current.Y + 1 < this.m_worldHeight)
+                if (current.Y + 1 < this.m_worldHeight)
                 {
                     neighbors.Add(m_worldRepresentation[current.X - 1, current.Y + 1]);
 
                 }
+                neighbors.Add(m_worldRepresentation[current.X - 1, current.Y]);
+            }
+            if (current.Y - 1 > 0)
+            {
+                neighbors.Add(m_worldRepresentation[current.X, current.Y - 1]);
+            }
+
+            if (current.Y + 1 < this.m_worldHeight)
+            {
+                neighbors.Add(m_worldRepresentation[current.X, current.Y + 1]);
+
             }
 
             if (current.X + 1 < this.m_worldWidth)
             {
                 if (current.Y - 1 > 0)
                 {
-                    neighbors.Add(m_worldRepresentation[current.X+ 1, current.Y - 1]);
+                    neighbors.Add(m_worldRepresentation[current.X + 1, current.Y - 1]);
                 }
 
                 if (current.Y + 1 < this.m_worldHeight)
                 {
                     neighbors.Add(m_worldRepresentation[current.X + 1, current.Y + 1]);
                 }
+                neighbors.Add(m_worldRepresentation[current.X + 1, current.Y]);
             }
 
             foreach (AStarTile neighbor in neighbors)
             {
+                if (!neighbor.IsPassable())
+                {
+                    continue;
+                }
+
                 if (closedSet.Contains(neighbor))
                 {
                     continue;
@@ -214,19 +247,19 @@ public class AStarSearch : MonoBehaviour {
                 }
                 neighbor.CameFrom = current;
                 neighbor.CostFromStart = tentativeScore;
-                neighbor.EstimatedCostToGoal = HeuristicCalculation(neighbor,endingTile) + current.CostFromStart;
+                neighbor.EstimatedCostToGoal = HeuristicCalculation(neighbor, endingTile) + current.CostFromStart;
             }
-            yield return new WaitForEndOfFrame();
         }
     }
 
     public int HeuristicCalculation(AStarTile current, AStarTile goal)
     {
-        return Mathf.Abs(current.X - goal.X) + Mathf.Abs(current.Y-goal.Y);
+        return Mathf.Abs(current.X - goal.X) + Mathf.Abs(current.Y - goal.Y);
     }
 
     // Update is called once per frame
-    void Update () {
-	
-	}
+    void Update()
+    {
+
+    }
 }

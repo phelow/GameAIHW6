@@ -16,7 +16,7 @@ public class AssembleMap : MonoBehaviour {
     [SerializeField]
     private Camera m_camera;
 
-    private float mc_timeslice = 1.0f;
+    private const float mc_timeslice = .1f;
 
     public static Tile[,] m_mapTiles;
 

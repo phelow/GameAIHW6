@@ -3,8 +3,8 @@ using System.Collections;
 using System.Linq;
 
 public class Tile : MonoBehaviour {
-    private static Tile ms_startingPosition = null;
-    private static Tile ms_endingPosition = null;
+    protected static Passable ms_startingPosition = null;
+    protected static Passable ms_endingPosition = null;
     private Color m_originalColor;
 
     [SerializeField]
@@ -24,32 +24,9 @@ public class Tile : MonoBehaviour {
 
     public void ChangeColor()
     {
-        m_meshRenderer.material.SetColor("_Color", Color.yellow);
+        m_meshRenderer.material.SetColor("_Color", Color.black);
     }
 
-    void OnMouseDown()
-    {
-        if(ms_startingPosition != null && ms_endingPosition != null)
-        {
-            ms_startingPosition.StopLerping();
-            ms_endingPosition.StopLerping();
-
-            AStarSearch.PerformSearch(ms_startingPosition, ms_endingPosition);
-
-            ms_startingPosition = null;
-            ms_endingPosition = null;
-        }
-
-        if(ms_startingPosition == null)
-        {
-            ms_startingPosition = this;
-            this.StartLerping();
-        } else if (ms_endingPosition == null)
-        {
-            ms_endingPosition = this;
-            this.StartLerping();
-        }
-    }
 
     private IEnumerator BlinkColor()
     {
@@ -63,13 +40,13 @@ public class Tile : MonoBehaviour {
         }
     }
 
-    public void StopLerping()
+    protected void StopLerping()
     {
         m_shouldLerp = false;
         StopCoroutine(BlinkColor());
     }
 
-    public void StartLerping()
+    protected void StartLerping()
     {
         m_shouldLerp = true;
         StartCoroutine(BlinkColor());
