@@ -16,7 +16,7 @@ public class AssembleMap : MonoBehaviour {
     [SerializeField]
     private Camera m_camera;
 
-    private float mc_timeslice = .1f;
+    private float mc_timeslice = 1.0f;
 
     private Tile[,] m_mapTiles;
 
@@ -26,7 +26,7 @@ public class AssembleMap : MonoBehaviour {
     void Start () {
         StartCoroutine(MakeMap());
     }
-	
+
     private IEnumerator MakeMap()
     {
         string[] lines = m_map.text.Split("\n"[0]);
@@ -80,9 +80,4 @@ public class AssembleMap : MonoBehaviour {
             y++;
         }
     }
-
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }

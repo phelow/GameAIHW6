@@ -20,12 +20,12 @@ GameObject:
   m_Component:
   - 4: {fileID: 4000013130990086}
   - 33: {fileID: 33000011837906220}
-  - 65: {fileID: 65000013499040340}
   - 23: {fileID: 23000011630842936}
   - 114: {fileID: 114000010379088992}
+  - 65: {fileID: 65000012141587140}
   m_Layer: 0
   m_Name: Out of Bounds
-  m_TagString: Untagged
+  m_TagString: Tiles
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -79,7 +79,7 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000011516805738}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!65 &65000013499040340
+--- !u!65 &65000012141587140
 BoxCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -102,3 +102,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92e84409d3f68bb4b944ef45c484476a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_meshRenderer: {fileID: 23000011630842936}

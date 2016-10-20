@@ -20,12 +20,12 @@ GameObject:
   m_Component:
   - 4: {fileID: 4000011355246120}
   - 33: {fileID: 33000011009781850}
-  - 65: {fileID: 65000011759135080}
   - 23: {fileID: 23000013043636988}
   - 114: {fileID: 114000013930253932}
+  - 65: {fileID: 65000013736586726}
   m_Layer: 0
   m_Name: Tree
-  m_TagString: Untagged
+  m_TagString: Tiles
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -79,7 +79,7 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000014268948710}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!65 &65000011759135080
+--- !u!65 &65000013736586726
 BoxCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -102,3 +102,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32bb44bb1a9b07f429bc0d1a7d1feb9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_meshRenderer: {fileID: 23000013043636988}
