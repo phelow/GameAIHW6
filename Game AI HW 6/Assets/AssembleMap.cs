@@ -18,7 +18,7 @@ public class AssembleMap : MonoBehaviour {
 
     private float mc_timeslice = 1.0f;
 
-    private Tile[,] m_mapTiles;
+    public static Tile[,] m_mapTiles;
 
     public const float mc_cameraOffset = 32.5f;
 

@@ -13,8 +13,8 @@ public class Tile : MonoBehaviour {
     private bool m_shouldLerp = true;
 
     // Use this for initialization
-    void Start () {
-        m_originalColor = m_meshRenderer.material.color;
+    void Awake () {
+        m_originalColor = m_meshRenderer.material.GetColor("_Color");
     }
 
     // Update is called once per frame
@@ -22,12 +22,19 @@ public class Tile : MonoBehaviour {
 	    
 	}
 
+    public void ChangeColor()
+    {
+        m_meshRenderer.material.SetColor("_Color", Color.yellow);
+    }
+
     void OnMouseDown()
     {
         if(ms_startingPosition != null && ms_endingPosition != null)
         {
             ms_startingPosition.StopLerping();
             ms_endingPosition.StopLerping();
+
+            AStarSearch.PerformSearch(ms_startingPosition, ms_endingPosition);
 
             ms_startingPosition = null;
             ms_endingPosition = null;
@@ -48,10 +55,9 @@ public class Tile : MonoBehaviour {
     {
         while (m_shouldLerp)
         {
-            m_meshRenderer.enabled = false;
-
+            m_meshRenderer.material.SetColor("_Color", Color.black);
             yield return new WaitForSeconds(.1f);
-            m_meshRenderer.enabled = true;
+            m_meshRenderer.material.SetColor("_Color", m_originalColor);
             yield return new WaitForSeconds(.1f);
 
         }
