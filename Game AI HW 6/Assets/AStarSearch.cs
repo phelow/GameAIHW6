@@ -8,6 +8,8 @@ public class AStarSearch : MonoBehaviour
     public static AStarSearch ms_instance;
     private int m_worldHeight;
     private int m_worldWidth;
+    [SerializeField]
+    private bool m_useManhattanDistance = false;
 
     private const float mc_timeslice = 1.0f;
 
@@ -287,6 +289,7 @@ public class AStarSearch : MonoBehaviour
                 {
                     neighbors.Add(m_worldRepresentation[current.X + 1, current.Y + 1]);
                 }
+
                 neighbors.Add(m_worldRepresentation[current.X + 1, current.Y]);
             }
 
@@ -319,9 +322,25 @@ public class AStarSearch : MonoBehaviour
         }
     }
 
-    public int HeuristicCalculation(AStarTile current, AStarTile goal)
+
+    public void StartUsingManhattanDistance()
+    {
+        m_useManhattanDistance = true;
+    }
+
+    public int EuclidianDistance(AStarTile current, AStarTile goal)
+    {
+        return (int)Mathf.Sqrt(Mathf.Pow((Mathf.Abs((float)current.X) - goal.X),2.0f) + Mathf.Pow(Mathf.Abs(((float)current.Y) - goal.Y),2.0f) );
+    }
+
+    public int ManHattanDistance(AStarTile current, AStarTile goal)
     {
         return Mathf.Abs(current.X - goal.X) + Mathf.Abs(current.Y - goal.Y);
+    }
+
+    public int HeuristicCalculation(AStarTile current, AStarTile goal)
+    {
+        return m_useManhattanDistance ? ManHattanDistance(current, goal) : EuclidianDistance(current, goal);
     }
 
     // Update is called once per frame
