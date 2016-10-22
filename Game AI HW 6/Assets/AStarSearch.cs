@@ -42,6 +42,17 @@ public class AStarSearch : MonoBehaviour
             return true;
         }
 
+        public void ColorPath()
+        {
+            for (int x = 0; x < AStarSearch.ms_instance.m_tileWidth; x++)
+            {
+                for (int y = 0; y < AStarSearch.ms_instance.m_tileWidth; y++)
+                {
+                    m_worldTiles[x, y].ColorNodeAsPath();
+                }
+            }
+        }
+
         public bool ContainsTile(Tile t)
         {
 
@@ -232,6 +243,8 @@ public class AStarSearch : MonoBehaviour
         float t = 0.0f;
         while (openSet.Count > 0)
         {
+      
+
             t += Time.deltaTime;
             if(t > mc_timeslice)
             {
@@ -250,6 +263,11 @@ public class AStarSearch : MonoBehaviour
             current.Color();
             openSet.Remove(current);
             closedSet.Add(current);
+
+            if(current == endingTile)
+            {
+                break;
+            }
 
             HashSet<AStarTile> neighbors = new HashSet<AStarTile>();
 
@@ -320,6 +338,15 @@ public class AStarSearch : MonoBehaviour
                 neighbor.EstimatedCostToGoal = HeuristicCalculation(neighbor, endingTile) + current.CostFromStart;
             }
         }
+
+
+        AStarTile backTrackCurrent = endingTile;
+        while(backTrackCurrent != startingTile ){
+            backTrackCurrent.ColorPath();
+            backTrackCurrent = backTrackCurrent.CameFrom;
+            yield return new WaitForEndOfFrame();
+        }
+
     }
 
 

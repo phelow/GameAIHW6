@@ -26,7 +26,11 @@ public class Tile : MonoBehaviour {
     {
         m_meshRenderer.material.SetColor("_Color", Color.black);
     }
-
+    
+    public void ColorNodeAsPath()
+    {
+        m_meshRenderer.material.SetColor("_Color", Color.cyan);
+    }
 
     void OnMouseDown()
     {
@@ -53,6 +57,7 @@ public class Tile : MonoBehaviour {
             ms_endingPosition = null;
         }
     }
+
     private IEnumerator BlinkColor()
     {
         while (m_shouldLerp)
