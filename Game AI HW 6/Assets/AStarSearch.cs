@@ -164,23 +164,29 @@ public class AStarSearch : MonoBehaviour
         ms_instance.m_worldHeight = AssembleMap.m_mapTiles.GetLength(1)/ ms_instance.m_tileWidth;
 
         ms_instance.m_worldRepresentation = new AStarTile[ms_instance.m_worldWidth, ms_instance.m_worldHeight];
-
-        for (int y = 0; y < ms_instance.m_worldHeight; y ++)
+        int xWorld = 0;
+        int yWorld = 0;
+        for (int y = 0; y + 1 < AssembleMap.m_mapTiles.GetLength(1); y += ms_instance.m_tileWidth)
         {
-            for (int x = 0; x < ms_instance.m_worldWidth; x ++)
+            xWorld = 0;
+            for (int x = 0; x + 1 < AssembleMap.m_mapTiles.GetLength(0); x += ms_instance.m_tileWidth)
             {
+            
                 Tile[,] assembleMaps = new Tile[ms_instance.m_tileWidth, ms_instance.m_tileWidth];
                 
                 for(int i = 0; i < ms_instance.m_tileWidth; i++)
                 {
                     for (int j = 0; j < ms_instance.m_tileWidth; j++)
                     {
-                        assembleMaps[i, j] = AssembleMap.m_mapTiles[x + i, y + j];
+                            assembleMaps[i, j] = AssembleMap.m_mapTiles[x + i, y + j];
                     }
                 }
-
-                ms_instance.m_worldRepresentation[x, y] = new AStarTile(assembleMaps, x, y);
+                if(xWorld < ms_instance.m_worldWidth && yWorld < ms_instance.m_worldHeight) { 
+                    ms_instance.m_worldRepresentation[xWorld, yWorld] = new AStarTile(assembleMaps, xWorld, yWorld);
+                }
+                xWorld++;
             }
+            yWorld++;
         }
     }
 

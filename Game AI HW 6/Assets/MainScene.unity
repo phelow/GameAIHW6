@@ -284,7 +284,7 @@ MonoBehaviour:
   mp_lava: {fileID: 1000011516805738, guid: 5553bad390bbbcd4688bf9cf279fbc4c, type: 2}
   mp_water: {fileID: 1000014268948710, guid: b6dd8df8e1a098946b71a51f732e6aab, type: 2}
   mp_ground: {fileID: 1000012365486796, guid: 4bf41009c6410f34ab52e0bd59ef1405, type: 2}
-  m_map: {fileID: 4900000, guid: b87789dcf0734ac45b11acdb756f5240, type: 3}
+  m_map: {fileID: 4900000, guid: b1897fcacfb1e3d40a24434fa8e566a0, type: 3}
   m_camera: {fileID: 534425063}
 --- !u!114 &1643033472
 MonoBehaviour:
@@ -297,3 +297,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 125ec010643f559468239c70e9d2044a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_tileWidth: 2

@@ -42,6 +42,7 @@ public class AssembleMap : MonoBehaviour {
 
         m_mapTiles = new Tile[width, height];
         float t = 0.0f;
+        int x = 0;
         foreach (string line in mapInput)
         {
             t += Time.deltaTime;
@@ -50,7 +51,7 @@ public class AssembleMap : MonoBehaviour {
                 t = 0;
                 yield return new WaitForEndOfFrame();
             }
-            int x = 0;
+            x = 0;
             foreach (char c in line)
             {
 
