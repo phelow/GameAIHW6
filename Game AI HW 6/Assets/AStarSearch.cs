@@ -5,15 +5,18 @@ using System.Collections.Generic;
 public class AStarSearch : MonoBehaviour
 {
     private AStarTile[,] m_worldRepresentation;
-    private static AStarSearch ms_instance;
+    public static AStarSearch ms_instance;
     private int m_worldHeight;
     private int m_worldWidth;
 
     private const float mc_timeslice = 1.0f;
+
+    [SerializeField]
+    public int m_tileWidth = 2;
     
     public class AStarTile
     {
-        Tile m_worldTile;
+        private Tile [,] m_worldTiles;
         private AStarTile m_cameFrom;
         private float m_costFromStart;
         private float m_estimatedCostToGoal;
@@ -23,27 +26,78 @@ public class AStarSearch : MonoBehaviour
 
         public bool IsPassable()
         {
-            return m_worldTile is Passable;
+            for(int x = 0; x < AStarSearch.ms_instance.m_tileWidth; x++)
+            {
+                for(int y = 0; y < AStarSearch.ms_instance.m_tileWidth; y++)
+                {
+                    if(!(m_worldTiles[x,y] is Passable))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        public bool ContainsTile(Tile t)
+        {
+
+            for (int x = 0; x < AStarSearch.ms_instance.m_tileWidth; x++)
+            {
+                for (int y = 0; y < AStarSearch.ms_instance.m_tileWidth; y++)
+                {
+                    Tile tile = m_worldTiles[x, y];
+                    if (tile == t)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         public void Color()
         {
-            m_worldTile.ChangeColor();
+            for (int x = 0; x < AStarSearch.ms_instance.m_tileWidth; x++)
+            {
+                for (int y = 0; y < AStarSearch.ms_instance.m_tileWidth; y++)
+                {
+                    m_worldTiles[x,y].ChangeColor();
+                }
+            }
         }
 
-        public AStarTile(Tile worldTile, int x, int y)
+        public void StartLerping()
+        {
+            foreach(Tile worldTile in this.m_worldTiles)
+            {
+                worldTile.StartLerping();
+            }
+        }
+
+        public void StopLerping()
+        {
+            foreach (Tile worldTile in this.m_worldTiles)
+            {
+                worldTile.StopLerping();
+            }
+
+        }
+
+        public AStarTile(Tile [,] worldTile, int x, int y)
         {
             m_estimatedCostToGoal = Mathf.Infinity;
             m_costFromStart = Mathf.Infinity;
-            m_worldTile = worldTile;
+            m_worldTiles = worldTile;
 
             this.m_xPosition = x;
             this.m_yPosition = y;
         }
 
-        public Tile GetTile()
+        public Tile[,] GetTiles()
         {
-            return m_worldTile;
+            return m_worldTiles;
         }
 
         public float CostFromStart
@@ -102,34 +156,43 @@ public class AStarSearch : MonoBehaviour
     void Start()
     {
         ms_instance = this;
-
     }
 
-    public void CreateWorldRepresentation()
+    public static void CreateWorldRepresentation()
     {
-        m_worldWidth = AssembleMap.m_mapTiles.GetLength(0);
-        m_worldHeight = AssembleMap.m_mapTiles.GetLength(1);
+        ms_instance.m_worldWidth = AssembleMap.m_mapTiles.GetLength(0)/ ms_instance.m_tileWidth;
+        ms_instance.m_worldHeight = AssembleMap.m_mapTiles.GetLength(1)/ ms_instance.m_tileWidth;
 
-        m_worldRepresentation = new AStarTile[m_worldWidth, m_worldHeight];
+        ms_instance.m_worldRepresentation = new AStarTile[ms_instance.m_worldWidth, ms_instance.m_worldHeight];
 
-        for (int y = 0; y < m_worldHeight; y++)
+        for (int y = 0; y < ms_instance.m_worldHeight; y ++)
         {
-            for (int x = 0; x < m_worldWidth; x++)
+            for (int x = 0; x < ms_instance.m_worldWidth; x ++)
             {
-                m_worldRepresentation[x, y] = new AStarTile(AssembleMap.m_mapTiles[x, y], x, y);
+                Tile[,] assembleMaps = new Tile[ms_instance.m_tileWidth, ms_instance.m_tileWidth];
+                
+                for(int i = 0; i < ms_instance.m_tileWidth; i++)
+                {
+                    for (int j = 0; j < ms_instance.m_tileWidth; j++)
+                    {
+                        assembleMaps[i, j] = AssembleMap.m_mapTiles[x + i, y + j];
+                    }
+                }
+
+                ms_instance.m_worldRepresentation[x, y] = new AStarTile(assembleMaps, x, y);
             }
         }
     }
 
-    public AStarTile GetAStarTileByWorldTile(Tile m_tile)
+    public static AStarTile GetAStarTileByWorldTile(Tile m_tile)
     {
-        for (int y = 0; y < m_worldHeight; y++)
+        for (int y = 0; y < ms_instance.m_worldHeight; y++)
         {
-            for (int x = 0; x < m_worldWidth; x++)
+            for (int x = 0; x < ms_instance.m_worldWidth; x++)
             {
-                if (m_worldRepresentation[x, y].GetTile() == m_tile)
+                if (ms_instance.m_worldRepresentation[x, y].ContainsTile(m_tile))
                 {
-                    return m_worldRepresentation[x, y];
+                    return ms_instance.m_worldRepresentation[x, y];
                 }
             }
         }
@@ -138,14 +201,12 @@ public class AStarSearch : MonoBehaviour
 
     }
 
-    public static void PerformSearch(Tile startingPoint, Tile endingPoint)
+    public static void PerformSearch(AStarTile startingPoint, AStarTile endingPoint)
     {
         //Assemble the tile representation of the wordl
-        ms_instance.CreateWorldRepresentation();
-
         ms_instance.StartCoroutine(ms_instance.PerformAStarSearchCoroutine(
-            ms_instance.GetAStarTileByWorldTile(startingPoint),
-            ms_instance.GetAStarTileByWorldTile(endingPoint)));
+            startingPoint,
+            endingPoint));
     }
 
     private IEnumerator PerformAStarSearchCoroutine(AStarTile startingTile, AStarTile endingTile)

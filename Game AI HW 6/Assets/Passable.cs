@@ -8,13 +8,13 @@ public class Passable : Tile
 
         if (ms_startingPosition == null)
         {
-            ms_startingPosition = this;
-            this.StartLerping();
+            ms_startingPosition = AStarSearch.GetAStarTileByWorldTile(this);
+            ms_startingPosition.StartLerping();
         }
         else if (ms_endingPosition == null)
         {
-            ms_endingPosition = this;
-            this.StartLerping();
+            ms_endingPosition = AStarSearch.GetAStarTileByWorldTile(this);
+            ms_endingPosition.StartLerping();
         }
 
         if (ms_startingPosition != null && ms_endingPosition != null)

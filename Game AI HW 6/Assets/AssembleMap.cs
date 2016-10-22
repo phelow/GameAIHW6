@@ -79,5 +79,9 @@ public class AssembleMap : MonoBehaviour {
             }
             y++;
         }
+
+
+        AStarSearch.CreateWorldRepresentation();
+
     }
 }

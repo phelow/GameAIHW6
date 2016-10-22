@@ -3,8 +3,8 @@ using System.Collections;
 using System.Linq;
 
 public class Tile : MonoBehaviour {
-    protected static Passable ms_startingPosition = null;
-    protected static Passable ms_endingPosition = null;
+    protected static AStarSearch.AStarTile ms_startingPosition = null;
+    protected static AStarSearch.AStarTile ms_endingPosition = null;
     private Color m_originalColor;
 
     [SerializeField]
@@ -40,13 +40,13 @@ public class Tile : MonoBehaviour {
         }
     }
 
-    protected void StopLerping()
+    public void StopLerping()
     {
         m_shouldLerp = false;
         StopCoroutine(BlinkColor());
     }
 
-    protected void StartLerping()
+    public void StartLerping()
     {
         m_shouldLerp = true;
         StartCoroutine(BlinkColor());
