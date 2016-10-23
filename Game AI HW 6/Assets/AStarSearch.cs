@@ -14,11 +14,25 @@ public class AStarSearch : MonoBehaviour
     private const float mc_timeslice = 1.0f;
 
     [SerializeField]
+    private GameObject mp_passable;
+    public static bool ms_rmbDown = false;
+
+    public static bool m_shouldLerp = true;
+    [SerializeField]
+    private GameObject mp_outOfBounds;
+    [SerializeField]
+    private GameObject mp_tree;
+    [SerializeField]
     public int m_tileWidth = 2;
-    
+
+    public static void ReplaceTile(Tile toReplace)
+    {
+        GetAStarTileByWorldTile(toReplace).ReplaceTile(toReplace);
+    }
+
     public class AStarTile
     {
-        private Tile [,] m_worldTiles;
+        private Tile[,] m_worldTiles;
         private AStarTile m_cameFrom;
         private float m_costFromStart;
         private float m_estimatedCostToGoal;
@@ -26,13 +40,44 @@ public class AStarSearch : MonoBehaviour
         private int m_xPosition;
         private int m_yPosition;
 
+        public void ReplaceTile(Tile tile)
+        {
+            for (int x = 0; x < AStarSearch.ms_instance.m_tileWidth; x++)
+            {
+                for (int y = 0; y < AStarSearch.ms_instance.m_tileWidth; y++)
+                {
+                    if ((m_worldTiles[x, y] == tile))
+                    {
+                        Vector3 pos = tile.transform.position;
+                        Quaternion rot = tile.transform.rotation;
+                        Destroy(tile.gameObject);
+                        if(tile is Passable)
+                        {
+                            m_worldTiles[x,y] = (GameObject.Instantiate(ms_instance.mp_outOfBounds, pos, rot, null) as GameObject).GetComponent<Tile>();
+                            
+                        }else if (tile is OutOfBounds)
+                        {
+                            m_worldTiles[x, y] = (GameObject.Instantiate(ms_instance.mp_tree, pos, rot, null) as GameObject).GetComponent<Tile>();
+
+                        }
+                        else if (tile is Tree)
+                        {
+                            m_worldTiles[x, y] = (GameObject.Instantiate(ms_instance.mp_passable, pos, rot, null) as GameObject).GetComponent<Tile>();
+
+                        }
+                    }
+                }
+            }
+
+        }
+
         public bool IsPassable()
         {
-            for(int x = 0; x < AStarSearch.ms_instance.m_tileWidth; x++)
+            for (int x = 0; x < AStarSearch.ms_instance.m_tileWidth; x++)
             {
-                for(int y = 0; y < AStarSearch.ms_instance.m_tileWidth; y++)
+                for (int y = 0; y < AStarSearch.ms_instance.m_tileWidth; y++)
                 {
-                    if(!(m_worldTiles[x,y] is Passable))
+                    if (!(m_worldTiles[x, y] is Passable))
                     {
                         return false;
                     }
@@ -76,14 +121,14 @@ public class AStarSearch : MonoBehaviour
             {
                 for (int y = 0; y < AStarSearch.ms_instance.m_tileWidth; y++)
                 {
-                    m_worldTiles[x,y].ChangeColor();
+                    m_worldTiles[x, y].ChangeColor();
                 }
             }
         }
 
         public void StartLerping()
         {
-            foreach(Tile worldTile in this.m_worldTiles)
+            foreach (Tile worldTile in this.m_worldTiles)
             {
                 worldTile.StartLerping();
             }
@@ -98,7 +143,7 @@ public class AStarSearch : MonoBehaviour
 
         }
 
-        public AStarTile(Tile [,] worldTile, int x, int y)
+        public AStarTile(Tile[,] worldTile, int x, int y)
         {
             m_estimatedCostToGoal = Mathf.Infinity;
             m_costFromStart = Mathf.Infinity;
@@ -173,8 +218,8 @@ public class AStarSearch : MonoBehaviour
 
     public static void CreateWorldRepresentation()
     {
-        ms_instance.m_worldWidth = AssembleMap.m_mapTiles.GetLength(0)/ ms_instance.m_tileWidth;
-        ms_instance.m_worldHeight = AssembleMap.m_mapTiles.GetLength(1)/ ms_instance.m_tileWidth;
+        ms_instance.m_worldWidth = AssembleMap.m_mapTiles.GetLength(0) / ms_instance.m_tileWidth;
+        ms_instance.m_worldHeight = AssembleMap.m_mapTiles.GetLength(1) / ms_instance.m_tileWidth;
 
         ms_instance.m_worldRepresentation = new AStarTile[ms_instance.m_worldWidth, ms_instance.m_worldHeight];
         int xWorld = 0;
@@ -184,17 +229,18 @@ public class AStarSearch : MonoBehaviour
             xWorld = 0;
             for (int x = 0; x + 1 < AssembleMap.m_mapTiles.GetLength(0); x += ms_instance.m_tileWidth)
             {
-            
+
                 Tile[,] assembleMaps = new Tile[ms_instance.m_tileWidth, ms_instance.m_tileWidth];
-                
-                for(int i = 0; i < ms_instance.m_tileWidth; i++)
+
+                for (int i = 0; i < ms_instance.m_tileWidth; i++)
                 {
                     for (int j = 0; j < ms_instance.m_tileWidth; j++)
                     {
-                            assembleMaps[i, j] = AssembleMap.m_mapTiles[x + i, y + j];
+                        assembleMaps[i, j] = AssembleMap.m_mapTiles[x + i, y + j];
                     }
                 }
-                if(xWorld < ms_instance.m_worldWidth && yWorld < ms_instance.m_worldHeight) { 
+                if (xWorld < ms_instance.m_worldWidth && yWorld < ms_instance.m_worldHeight)
+                {
                     ms_instance.m_worldRepresentation[xWorld, yWorld] = new AStarTile(assembleMaps, xWorld, yWorld);
                 }
                 xWorld++;
@@ -209,9 +255,15 @@ public class AStarSearch : MonoBehaviour
         {
             for (int x = 0; x < ms_instance.m_worldWidth; x++)
             {
-                if (ms_instance.m_worldRepresentation[x, y].ContainsTile(m_tile))
+                try {
+                    if (ms_instance.m_worldRepresentation[x, y].ContainsTile(m_tile))
+                    {
+                        return ms_instance.m_worldRepresentation[x, y];
+                    }
+                }
+                catch
                 {
-                    return ms_instance.m_worldRepresentation[x, y];
+
                 }
             }
         }
@@ -243,10 +295,9 @@ public class AStarSearch : MonoBehaviour
         float t = 0.0f;
         while (openSet.Count > 0)
         {
-      
 
             t += Time.deltaTime;
-            if(t > mc_timeslice)
+            if (t > mc_timeslice)
             {
                 yield return new WaitForEndOfFrame();
                 t = 0;
@@ -260,11 +311,16 @@ public class AStarSearch : MonoBehaviour
                 }
             }
 
+
             current.Color();
             openSet.Remove(current);
             closedSet.Add(current);
-
-            if(current == endingTile)
+            
+            if(current.IsPassable() == false)
+            {
+                continue;
+            }
+            if (current == endingTile)
             {
                 break;
             }
@@ -313,10 +369,6 @@ public class AStarSearch : MonoBehaviour
 
             foreach (AStarTile neighbor in neighbors)
             {
-                if (!neighbor.IsPassable())
-                {
-                    continue;
-                }
 
                 if (closedSet.Contains(neighbor))
                 {
@@ -341,7 +393,8 @@ public class AStarSearch : MonoBehaviour
 
 
         AStarTile backTrackCurrent = endingTile;
-        while(backTrackCurrent != startingTile ){
+        while (backTrackCurrent != startingTile)
+        {
             backTrackCurrent.ColorPath();
             backTrackCurrent = backTrackCurrent.CameFrom;
             yield return new WaitForEndOfFrame();
@@ -357,7 +410,7 @@ public class AStarSearch : MonoBehaviour
 
     public int EuclidianDistance(AStarTile current, AStarTile goal)
     {
-        return (int)Mathf.Sqrt(Mathf.Pow((Mathf.Abs((float)current.X) - goal.X),2.0f) + Mathf.Pow(Mathf.Abs(((float)current.Y) - goal.Y),2.0f) );
+        return (int)Mathf.Sqrt(Mathf.Pow((Mathf.Abs((float)current.X) - goal.X), 2.0f) + Mathf.Pow(Mathf.Abs(((float)current.Y) - goal.Y), 2.0f));
     }
 
     public int ManHattanDistance(AStarTile current, AStarTile goal)
@@ -373,6 +426,10 @@ public class AStarSearch : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            ms_rmbDown = !ms_rmbDown;
+        }
     }
 }
