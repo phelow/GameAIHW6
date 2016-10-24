@@ -32,7 +32,7 @@ public class AStarSearch : MonoBehaviour
 
     public class AStarTile
     {
-        private Tile[,] m_worldTiles;
+        private Tile m_worldTiles;
         private AStarTile m_cameFrom;
         private float m_costFromStart;
         private float m_estimatedCostToGoal;
@@ -42,30 +42,24 @@ public class AStarSearch : MonoBehaviour
 
         public void ReplaceTile(Tile tile)
         {
-            for (int x = 0; x < AStarSearch.ms_instance.m_tileWidth; x++)
+            if ((m_worldTiles == tile))
             {
-                for (int y = 0; y < AStarSearch.ms_instance.m_tileWidth; y++)
+                Vector3 pos = tile.transform.position;
+                Quaternion rot = tile.transform.rotation;
+                Destroy(tile.gameObject);
+                if(tile is Passable)
                 {
-                    if ((m_worldTiles[x, y] == tile))
-                    {
-                        Vector3 pos = tile.transform.position;
-                        Quaternion rot = tile.transform.rotation;
-                        Destroy(tile.gameObject);
-                        if(tile is Passable)
-                        {
-                            m_worldTiles[x,y] = (GameObject.Instantiate(ms_instance.mp_outOfBounds, pos, rot, null) as GameObject).GetComponent<Tile>();
+                    m_worldTiles = (GameObject.Instantiate(ms_instance.mp_outOfBounds, pos, rot, null) as GameObject).GetComponent<Tile>();
                             
-                        }else if (tile is OutOfBounds)
-                        {
-                            m_worldTiles[x, y] = (GameObject.Instantiate(ms_instance.mp_tree, pos, rot, null) as GameObject).GetComponent<Tile>();
+                }else if (tile is OutOfBounds)
+                {
+                    m_worldTiles = (GameObject.Instantiate(ms_instance.mp_tree, pos, rot, null) as GameObject).GetComponent<Tile>();
 
-                        }
-                        else if (tile is Tree)
-                        {
-                            m_worldTiles[x, y] = (GameObject.Instantiate(ms_instance.mp_passable, pos, rot, null) as GameObject).GetComponent<Tile>();
+                }
+                else if (tile is Tree)
+                {
+                    m_worldTiles= (GameObject.Instantiate(ms_instance.mp_passable, pos, rot, null) as GameObject).GetComponent<Tile>();
 
-                        }
-                    }
                 }
             }
 
@@ -73,77 +67,44 @@ public class AStarSearch : MonoBehaviour
 
         public bool IsPassable()
         {
-            for (int x = 0; x < AStarSearch.ms_instance.m_tileWidth; x++)
+            if (!(m_worldTiles is Passable))
             {
-                for (int y = 0; y < AStarSearch.ms_instance.m_tileWidth; y++)
-                {
-                    if (!(m_worldTiles[x, y] is Passable))
-                    {
-                        return false;
-                    }
-                }
+                return false;
             }
-
             return true;
         }
 
         public void ColorPath()
         {
-            for (int x = 0; x < AStarSearch.ms_instance.m_tileWidth; x++)
-            {
-                for (int y = 0; y < AStarSearch.ms_instance.m_tileWidth; y++)
-                {
-                    m_worldTiles[x, y].ColorNodeAsPath();
-                }
-            }
+            m_worldTiles.ColorNodeAsPath();
         }
 
         public bool ContainsTile(Tile t)
         {
-
-            for (int x = 0; x < AStarSearch.ms_instance.m_tileWidth; x++)
+            if (m_worldTiles == t)
             {
-                for (int y = 0; y < AStarSearch.ms_instance.m_tileWidth; y++)
-                {
-                    Tile tile = m_worldTiles[x, y];
-                    if (tile == t)
-                    {
-                        return true;
-                    }
-                }
+                return true;
             }
             return false;
         }
 
         public void Color()
         {
-            for (int x = 0; x < AStarSearch.ms_instance.m_tileWidth; x++)
-            {
-                for (int y = 0; y < AStarSearch.ms_instance.m_tileWidth; y++)
-                {
-                    m_worldTiles[x, y].ChangeColor();
-                }
-            }
+            m_worldTiles.ChangeColor();
         }
 
         public void StartLerping()
         {
-            foreach (Tile worldTile in this.m_worldTiles)
-            {
-                worldTile.StartLerping();
-            }
+             m_worldTiles.StartLerping();
         }
 
         public void StopLerping()
         {
-            foreach (Tile worldTile in this.m_worldTiles)
-            {
-                worldTile.StopLerping();
-            }
+                m_worldTiles.StopLerping();
 
         }
 
-        public AStarTile(Tile[,] worldTile, int x, int y)
+        public AStarTile(Tile worldTile, int x, int y)
         {
             m_estimatedCostToGoal = Mathf.Infinity;
             m_costFromStart = Mathf.Infinity;
@@ -153,7 +114,7 @@ public class AStarSearch : MonoBehaviour
             this.m_yPosition = y;
         }
 
-        public Tile[,] GetTiles()
+        public Tile GetTiles()
         {
             return m_worldTiles;
         }
@@ -211,7 +172,7 @@ public class AStarSearch : MonoBehaviour
         }
     }
     // Use this for initialization
-    void Start()
+    void Awake()
     {
         ms_instance = this;
     }
@@ -230,18 +191,48 @@ public class AStarSearch : MonoBehaviour
             for (int x = 0; x + 1 < AssembleMap.m_mapTiles.GetLength(0); x += ms_instance.m_tileWidth)
             {
 
-                Tile[,] assembleMaps = new Tile[ms_instance.m_tileWidth, ms_instance.m_tileWidth];
+                int passableCount = 0;
+                int outOFBoundsCount = 0;
+                int waterCount = 0;
 
-                for (int i = 0; i < ms_instance.m_tileWidth; i++)
+                for(int i = 0; i < ms_instance.m_tileWidth; i++)
                 {
                     for (int j = 0; j < ms_instance.m_tileWidth; j++)
                     {
-                        assembleMaps[i, j] = AssembleMap.m_mapTiles[x + i, y + j];
+                        if(AssembleMap.m_mapTiles[x+i,y+j] == AssembleMap.TileType.Tree)
+                        {
+                            waterCount++;
+                        }
+                        if (AssembleMap.m_mapTiles[x+i,y+ j] == AssembleMap.TileType.Passable)
+                        {
+                            passableCount++;
+                        }
+                        if (AssembleMap.m_mapTiles[x+i, y+j] == AssembleMap.TileType.OutOFBounds)
+                        {
+                            outOFBoundsCount++;
+                        }
                     }
+
                 }
-                if (xWorld < ms_instance.m_worldWidth && yWorld < ms_instance.m_worldHeight)
+                
+                if(outOFBoundsCount > 0)
                 {
-                    ms_instance.m_worldRepresentation[xWorld, yWorld] = new AStarTile(assembleMaps, xWorld, yWorld);
+                    GameObject block = GameObject.Instantiate(AssembleMap.ms_instance.mp_lava, ms_instance.transform.position + new Vector3(x * ms_instance.m_tileWidth, y * ms_instance.m_tileWidth, 0), ms_instance.transform.rotation, null) as GameObject;
+                    block.transform.localScale *= Mathf.Pow(ms_instance.m_tileWidth,1.9f);
+                    ms_instance.m_worldRepresentation[xWorld, yWorld] = new AStarTile((block).GetComponent<Tile>(), xWorld, yWorld);
+                } else if(waterCount > 0)
+                {
+                    GameObject block = GameObject.Instantiate(AssembleMap.ms_instance.mp_water, ms_instance.transform.position + new Vector3(x * ms_instance.m_tileWidth, y * ms_instance.m_tileWidth, 0), ms_instance.transform.rotation, null) as GameObject;
+                    block.transform.localScale *= Mathf.Pow(ms_instance.m_tileWidth, 1.9f);
+                    ms_instance.m_worldRepresentation[xWorld, yWorld] = new AStarTile((block).GetComponent<Tile>(), xWorld, yWorld);
+
+                }
+                else
+                {
+                    GameObject block = GameObject.Instantiate(AssembleMap.ms_instance.mp_ground, ms_instance.transform.position + new Vector3(x * ms_instance.m_tileWidth, y * ms_instance.m_tileWidth, 0), ms_instance.transform.rotation, null) as GameObject;
+                    block.transform.localScale *= Mathf.Pow(ms_instance.m_tileWidth, 1.9f);
+                    ms_instance.m_worldRepresentation[xWorld, yWorld] = new AStarTile((block).GetComponent<Tile>(), xWorld, yWorld);
+
                 }
                 xWorld++;
             }
