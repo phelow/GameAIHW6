@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44692546, g: 0.49678695, b: 0.5750854, a: 1}
+  m_IndirectSpecularColor: {r: 0.44692492, g: 0.4967869, b: 0.57508546, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -250,6 +250,7 @@ GameObject:
   - 4: {fileID: 1643033470}
   - 114: {fileID: 1643033471}
   - 114: {fileID: 1643033472}
+  - 114: {fileID: 1643033473}
   m_Layer: 0
   m_Name: Game Map
   m_TagString: Untagged
@@ -284,7 +285,7 @@ MonoBehaviour:
   mp_lava: {fileID: 1000011516805738, guid: 5553bad390bbbcd4688bf9cf279fbc4c, type: 2}
   mp_water: {fileID: 1000014268948710, guid: b6dd8df8e1a098946b71a51f732e6aab, type: 2}
   mp_ground: {fileID: 1000012365486796, guid: 4bf41009c6410f34ab52e0bd59ef1405, type: 2}
-  m_map: {fileID: 4900000, guid: b1897fcacfb1e3d40a24434fa8e566a0, type: 3}
+  m_map: {fileID: 4900000, guid: b87789dcf0734ac45b11acdb756f5240, type: 3}
   m_camera: {fileID: 534425063}
 --- !u!114 &1643033472
 MonoBehaviour:
@@ -297,4 +298,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 125ec010643f559468239c70e9d2044a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_useManhattanDistance: 0
   m_tileWidth: 2
+--- !u!114 &1643033473
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1643033469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeebdc25970f96e4b89f7f1595fd89e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waypoint: {fileID: 1000013747646954, guid: 25c551918069bef4eb830670776cafb3, type: 2}
+  waypointFile: {fileID: 4900000, guid: 9f43a135dca7acd46ac223b3065c8090, type: 3}
+  map: {fileID: 4900000, guid: b87789dcf0734ac45b11acdb756f5240, type: 3}
+  mapOffset: -1

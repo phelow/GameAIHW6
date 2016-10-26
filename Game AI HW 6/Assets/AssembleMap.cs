@@ -22,9 +22,12 @@ public class AssembleMap : MonoBehaviour {
 
     public const float mc_cameraOffset = 32.5f;
 
+	private WaypointCreation wpc;
+
     // Use this for initialization
     void Start () {
         StartCoroutine(MakeMap());
+		wpc = gameObject.GetComponent<WaypointCreation> ();
     }
 
     private IEnumerator MakeMap()
@@ -83,6 +86,7 @@ public class AssembleMap : MonoBehaviour {
 
 
         AStarSearch.CreateWorldRepresentation();
-
+		//send m_mapTiles to WaypointCreation
+		wpc.makeWaypoints();
     }
 }
