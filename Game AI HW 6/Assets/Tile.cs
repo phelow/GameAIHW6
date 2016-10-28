@@ -5,6 +5,7 @@ using System.Linq;
 public class Tile : MonoBehaviour {
     protected static AStarSearch.AStarTile ms_startingPosition = null;
     protected static AStarSearch.AStarTile ms_endingPosition = null;
+    private float m_clickTime = 1.0f;
     private Color m_originalColor;
 
     [SerializeField]
@@ -16,11 +17,6 @@ public class Tile : MonoBehaviour {
     void Awake () {
         m_originalColor = m_meshRenderer.material.GetColor("_Color");
     }
-
-    // Update is called once per frame
-    void Update () {
-	    
-	}
 
     public void ChangeColor()
     {
@@ -34,6 +30,14 @@ public class Tile : MonoBehaviour {
 
     void OnMouseDown()
     {
+        //if it's a right click, cycle between passable, out of bounds and tree
+        if (AStarSearch.ms_rmbDown)
+        {
+            Debug.Log("MouseButtonOneIsDown");
+            AStarSearch.ReplaceTile(this);
+            return;
+        }
+
 
         if (ms_startingPosition == null)
         {
