@@ -97,7 +97,6 @@ public class AStarSearch : MonoBehaviour
                 }
             }
         }
-
         public bool ContainsTile(Tile t)
         {
 
@@ -214,6 +213,13 @@ public class AStarSearch : MonoBehaviour
     void Start()
     {
         ms_instance = this;
+    }
+
+
+
+    public void setManhattanDistance(bool setValue)
+    {
+        m_useManhattanDistance = setValue;
     }
 
     public static void CreateWorldRepresentation()
