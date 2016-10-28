@@ -355,6 +355,10 @@ public class AStarSearch : MonoBehaviour
         m_useManhattanDistance = true;
     }
 
+	public void setManhattanDistance(bool setValue){
+		m_useManhattanDistance = setValue;
+	}
+
     public int EuclidianDistance(AStarTile current, AStarTile goal)
     {
         return (int)Mathf.Sqrt(Mathf.Pow((Mathf.Abs((float)current.X) - goal.X),2.0f) + Mathf.Pow(Mathf.Abs(((float)current.Y) - goal.Y),2.0f) );
