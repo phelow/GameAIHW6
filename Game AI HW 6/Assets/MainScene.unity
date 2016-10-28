@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44692492, g: 0.4967869, b: 0.57508546, a: 1}
+  m_IndirectSpecularColor: {r: 0.44692546, g: 0.49678695, b: 0.5750854, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -846,6 +846,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_useManhattanDistance: 0
+  mp_passable: {fileID: 1000012365486796, guid: 4bf41009c6410f34ab52e0bd59ef1405,
+    type: 2}
+  mp_outOfBounds: {fileID: 1000011516805738, guid: 5553bad390bbbcd4688bf9cf279fbc4c,
+    type: 2}
+  mp_tree: {fileID: 1000014268948710, guid: b6dd8df8e1a098946b71a51f732e6aab, type: 2}
   m_tileWidth: 2
 --- !u!114 &1643033473
 MonoBehaviour:

@@ -271,6 +271,11 @@ public class AStarSearch : MonoBehaviour
             endingPoint));
     }
 
+    public void setManhattanDistance(bool setValue)
+    {
+        m_useManhattanDistance = setValue;
+    }
+
     private IEnumerator PerformAStarSearchCoroutine(AStarTile startingTile, AStarTile endingTile)
     {
         yield return new WaitForEndOfFrame();
