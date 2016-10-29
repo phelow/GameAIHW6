@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class AStarSearch : MonoBehaviour
 {
-    private AStarTile[,] m_worldRepresentation;
+    public AStarTile[,] m_worldRepresentation;
     public static AStarSearch ms_instance;
     private int m_worldHeight;
     private int m_worldWidth;
@@ -186,10 +186,10 @@ public class AStarSearch : MonoBehaviour
         int xWorld = 0;
         int yWorld = 0;
         
-        for (int y = 0; y + 1 < AssembleMap.m_mapTiles.GetLength(1); y += ms_instance.m_tileWidth)
+        for (int y = 0; y + ms_instance.m_tileWidth < AssembleMap.m_mapTiles.GetLength(1); y += ms_instance.m_tileWidth)
         {
             xWorld = 0;
-            for (int x = 0; x + 1 < AssembleMap.m_mapTiles.GetLength(0); x += ms_instance.m_tileWidth)
+            for (int x = 0; x + ms_instance.m_tileWidth < AssembleMap.m_mapTiles.GetLength(0); x += ms_instance.m_tileWidth)
             {
 
                 int passableCount = 0;

@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 public class Waypoint : MonoBehaviour {
 
-	private List<Waypoint> neighbors;
-	private ArrayList lines;
+    private List<Waypoint> neighbors;
+    private ArrayList lines;
 
     [SerializeField]
     private Material m_renderOverEverything;
@@ -14,11 +14,32 @@ public class Waypoint : MonoBehaviour {
     public int x = 7721;
 
 
-	// Use this for initialization
+    // Use this for initialization
 
-	public void addNeighbor (Waypoint neighbor){
-		neighbors.Add (neighbor);
-	}
+    public void addNeighbor(Waypoint neighbor) {
+        neighbors.Add(neighbor);
+    }
+
+    public bool HasSameNeighbors(Waypoint other)
+    {
+        List<Waypoint> otherNeighbors = other.GetNeighbors();
+
+        foreach(Waypoint wp in otherNeighbors)
+        {
+            if (!neighbors.Contains(wp))
+            {
+                return false;
+            }
+        }
+
+
+        return true;
+    }
+
+    public List<Waypoint> GetNeighbors()
+    {
+        return neighbors;
+    }
 
     public void Initialize()
     {

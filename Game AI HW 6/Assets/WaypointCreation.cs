@@ -34,14 +34,26 @@ public class WaypointCreation : MonoBehaviour {
         //parse waypointFile
         string[] lines = waypointFile.text.Split("\n"[0]);
 
-        foreach (string line in lines)
+        float t = 0.0f;
+        foreach (AStarSearch.AStarTile tile in AStarSearch.ms_instance.m_worldRepresentation)
         {
-            if (line == "")
+            t += .1f;
+            if(t > 100.0f)
+            {
+                t = 0.0f;
+                yield return new WaitForEndOfFrame();
+            }
+            if(!tile.GetTiles() is Passable)
+            {
                 continue;
-            string[] coordinates = line.Split(","[0]);
-            float xpos = float.Parse(coordinates[0]);
-            float ypos = float.Parse(coordinates[1]);
-            Waypoint curPoint = (GameObject.Instantiate(waypoint, new Vector3(xpos, ypos, mapOffset), transform.rotation, this.transform) as GameObject).GetComponent<Waypoint>();
+            }
+
+            if(tile == null)
+            {
+                Debug.Log("Tile is weird");
+                continue;
+            }
+            Waypoint curPoint = (GameObject.Instantiate(waypoint, new Vector3(tile.GetTiles().transform.position.x, tile.GetTiles().transform.position.y, tile.GetTiles().transform.position.z), transform.rotation, this.transform) as GameObject).GetComponent<Waypoint>();
             waypoints.Add(curPoint);
             curPoint.GetComponent<Waypoint>().Initialize();
         }
@@ -49,20 +61,36 @@ public class WaypointCreation : MonoBehaviour {
         // ERROR IN addNeighbor function
         //for each waypoint, see if there is line of sight between this and every other waypoint
         //if so, add each other as neighbors and draw a line between them.
+
+        t = 0.0f;
         for (int i = 0; i < waypoints.Count; i++)
         {
             for (int j = i + 1; j < waypoints.Count; j++)
             {
+
+                t += .1f;
+                if (t > 100.0f)
+                {
+                    t = 0.0f;
+                    yield return new WaitForEndOfFrame();
+                }
+
                 Waypoint curPoint = waypoints[i];
                 Waypoint otherPoint = waypoints[j];
                 Vector3 curPos = curPoint.getPos();
                 Vector3 otherPos = otherPoint.getPos();
                 if (lineOfSight(curPos, otherPos))
                 {
+                    yield return new WaitForEndOfFrame();
                     curPoint.addNeighbor(otherPoint);
                     otherPoint.addNeighbor(curPoint);
+
+                    if (curPoint.HasSameNeighbors(otherPoint))
+                    {
+                        Destroy(otherPoint);
+                        continue;
+                    }
                     curPoint.addLine(otherPos);
-                    yield return new WaitForEndOfFrame();
                 }
             }
         }
@@ -84,9 +112,9 @@ public class WaypointCreation : MonoBehaviour {
 		Vector3 direction = difference.normalized;
 		RaycastHit[] hits;
 		hits = Physics.RaycastAll (curPos, direction, distance);
-
-		foreach (RaycastHit hit in hits) {
-			if (hit.collider != null) {
+		foreach (RaycastHit hit in hits)
+        {
+            if (hit.collider != null) {
                 Waypoint wp = hit.transform.gameObject.GetComponent<Waypoint>();
                 if(wp != null)
                 {
@@ -96,12 +124,12 @@ public class WaypointCreation : MonoBehaviour {
 
 				Passable passScript = hit.transform.gameObject.GetComponent<Passable> ();
 				if (passScript == null) {
-					Debug.Log ("does not have component");
+					//Debug.Log ("does not have component");
 					return false;
 				}
 			}
 		}
-		Debug.Log ("raycast passed");
+		//Debug.Log ("raycast passed");
 		return true;
 	}
 
