@@ -95,5 +95,6 @@ public class AssembleMap : MonoBehaviour {
 
         AStarSearch.CreateWorldRepresentation();
 
+        WaypointCreation.ms_instance.makeWaypoints();
     }
 }

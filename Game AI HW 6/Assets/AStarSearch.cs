@@ -185,6 +185,7 @@ public class AStarSearch : MonoBehaviour
         ms_instance.m_worldRepresentation = new AStarTile[ms_instance.m_worldWidth, ms_instance.m_worldHeight];
         int xWorld = 0;
         int yWorld = 0;
+        
         for (int y = 0; y + 1 < AssembleMap.m_mapTiles.GetLength(1); y += ms_instance.m_tileWidth)
         {
             xWorld = 0;

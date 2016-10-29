@@ -7,18 +7,25 @@ public class Waypoint : MonoBehaviour {
 	private List<Waypoint> neighbors;
 	private ArrayList lines;
 
-	public int x = 7721;
+    [SerializeField]
+    private Material m_renderOverEverything;
+
+
+    public int x = 7721;
 
 
 	// Use this for initialization
-	void Start () {
-		neighbors = new List<Waypoint> ();
-		lines = new ArrayList ();
-	}
 
 	public void addNeighbor (Waypoint neighbor){
 		neighbors.Add (neighbor);
 	}
+
+    public void Initialize()
+    {
+        neighbors = new List<Waypoint>();
+        lines = new ArrayList();
+
+    }
 
 	public void addLine(Vector3 targetPos){
 		GameObject curLine = new GameObject();
@@ -27,6 +34,7 @@ public class Waypoint : MonoBehaviour {
 		LineRenderer lr = curLine.GetComponent<LineRenderer> ();
 		lr.SetPosition (0, transform.position);
 		lr.SetPosition (1, targetPos);
+        lr.material = m_renderOverEverything;
 	}
 
 	public Vector3 getPos(){
