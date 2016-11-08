@@ -11,11 +11,12 @@ public class UIControl : MonoBehaviour {
 	//UI Elements
 	public Text loadText;
 	public Button worldRepButton;
-	public Button heuristicButton;
 	public Button nextSceneButton;
 	private Text worldRepText;
-	private Text heuristicText;
 	private Text nextSceneText;
+	public Slider heuristicSlider;
+	public Text ManhattanLabel;
+	public Text EuclideanLabel;
 
 	//Script References
 	public GameObject gameMap;
@@ -33,13 +34,13 @@ public class UIControl : MonoBehaviour {
 	void Start () {
 		loadText.text = "Loading, Please Wait...";
 		worldRepButton.gameObject.SetActive (false);
-		heuristicButton.gameObject.SetActive (false);
 		nextSceneButton.gameObject.SetActive (false);
+		heuristicSlider.gameObject.SetActive (false);
+		ManhattanLabel.gameObject.SetActive (false);
+		EuclideanLabel.gameObject.SetActive (false);
 		worldRepText = worldRepButton.gameObject.GetComponentInChildren<Text> ();
-		heuristicText = heuristicButton.gameObject.GetComponentInChildren<Text> ();
 		nextSceneText = nextSceneButton.gameObject.GetComponentInChildren<Text> ();
 		worldRepButton.onClick.AddListener (toggleWorld);
-		heuristicButton.onClick.AddListener (toggleHeuristic);
 		nextSceneButton.onClick.AddListener (loadNextScene);
 
 		aStar = gameMap.GetComponent<AStarSearch> ();
@@ -54,10 +55,11 @@ public class UIControl : MonoBehaviour {
 		loadText.text = "";
 		worldRepButton.gameObject.SetActive (true);
 		worldRepText.text = "Tile View";
-		heuristicButton.gameObject.SetActive (true);
-		heuristicText.text = "Euclidean";
 		nextSceneButton.gameObject.SetActive (true);
 		nextSceneText.text = "Switch Maps";
+		heuristicSlider.gameObject.SetActive (true);
+		ManhattanLabel.gameObject.SetActive (true);
+		EuclideanLabel.gameObject.SetActive (true);
 	}
 
 	void toggleWorld(){
@@ -69,18 +71,6 @@ public class UIControl : MonoBehaviour {
 			worldRepText.text = "Tile View";
 			camera.transform.position = new Vector3(camera.transform.position.x, camera.transform.position.y, camera.transform.position.z - wpc.mapOffset);
 			isTile = true;
-		}
-	}
-
-	void toggleHeuristic(){
-		if (isManhattan) {
-			heuristicText.text = "Euclidean";
-			aStar.setManhattanDistance (false);
-			isManhattan = false;
-		} else {
-			heuristicText.text = "Manhattan";
-			aStar.setManhattanDistance (true);
-			isManhattan = true;
 		}
 	}
 

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class AStarSearch : MonoBehaviour
 {
@@ -24,6 +25,8 @@ public class AStarSearch : MonoBehaviour
     private GameObject mp_tree;
     [SerializeField]
     public int m_tileWidth = 2;
+
+	public Slider sliderBar;
 
     public static void ReplaceTile(Tile toReplace)
     {
@@ -417,7 +420,9 @@ public class AStarSearch : MonoBehaviour
 
     public int HeuristicCalculation(AStarTile current, AStarTile goal)
     {
-        return m_useManhattanDistance ? ManHattanDistance(current, goal) : EuclidianDistance(current, goal);
+		int manhattanValue = 100 - Mathf.RoundToInt(sliderBar.value);
+		int euclideanValue = Mathf.RoundToInt(sliderBar.value);
+		return (ManHattanDistance(current, goal) * manhattanValue) + (EuclidianDistance(current, goal) * euclideanValue);
     }
 
     // Update is called once per frame
